@@ -26,20 +26,36 @@ function AdminLogin() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
+  try {
+    console.log('Attempting login...');
+    
+    // Try new method first, fallback to old method
+    let session;
     try {
-      await account.createEmailSession(email, password);
-      navigate('/admin/dashboard');
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Invalid email or password. Please try again.');
-    } finally {
-      setLoading(false);
+      session = await account.createEmailPasswordSession(email, password);
+    } catch (err) {
+      // Fallback to old method name
+      if (err.message && err.message.includes('is not a function')) {
+        session = await account.createEmailSession(email, password);
+      } else {
+        throw err;
+      }
     }
-  };
+    
+    console.log('Login successful!');
+    navigate('/admin/dashboard');
+  } catch (error) {
+    console.error('Login error:', error);
+    setError('Invalid email or password. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="admin-login-page">
