@@ -1,118 +1,148 @@
-import React, { useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import data from '../data/data.json';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { databases, DATABASE_ID, PROJECTS_COLLECTION_ID } from '../appwrite/config';
+import './ProjectDetail.css';
 
 function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const project = data.projects.find(p => p.id === parseInt(id));
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchProject();
   }, [id]);
 
-  if (!project) {
+  const fetchProject = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await databases.getDocument(
+        DATABASE_ID,
+        PROJECTS_COLLECTION_ID,
+        id
+      );
+      
+      console.log('Fetched project:', response);
+      setProject(response);
+    } catch (err) {
+      console.error('Error fetching project:', err);
+      setError('Project not found or failed to load.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
     return (
       <div className="project-detail-page">
-        <section className="page-header">
-          <div className="container">
-            <h1>Project Not Found</h1>
-            <Link to="/portfolio" className="btn btn-primary">Back to Portfolio</Link>
-          </div>
-        </section>
+        <div className="loading-container">
+          <div className="loading-spinner">⏳</div>
+          <p>Loading project details...</p>
+        </div>
       </div>
     );
   }
 
-  // Get related projects (same category)
-  const relatedProjects = data.projects
-    .filter(p => p.category === project.category && p.id !== project.id)
-    .slice(0, 3);
+  if (error || !project) {
+    return (
+      <div className="project-detail-page">
+        <div className="error-container">
+          <div className="error-icon">❌</div>
+          <h2>Project Not Found</h2>
+          <p>{error || 'The project you\'re looking for doesn\'t exist.'}</p>
+          <button onClick={() => navigate('/portfolio')} className="back-btn">
+            ← Back to Portfolio
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="project-detail-page">
-      {/* Project Header */}
-      <section className="project-header">
+      {/* Hero Section */}
+      <section className="project-hero">
         <div className="container">
-          <button onClick={() => navigate(-1)} className="back-button">
-            ← Back
+          <button onClick={() => navigate('/portfolio')} className="back-button">
+            ← Back to Portfolio
           </button>
-          <div className="project-header-content">
+          
+          <div className="project-header">
             <span className="project-category-badge">{project.category}</span>
-            <h1 className="project-title-large">{project.title}</h1>
-            <p className="project-description-large">{project.description}</p>
-            <div className="project-tags-large">
-              {project.tags.map((tag, i) => (
-                <span key={i} className="tag-large">{tag}</span>
-              ))}
-            </div>
+            <h1 className="project-title">{project.title}</h1>
+            <p className="project-subtitle">{project.description}</p>
           </div>
+
+          {project.imageUrl && (
+            <div className="project-hero-image">
+              <img src={project.imageUrl} alt={project.title} />
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Project Details */}
+      {/* Project Content */}
       <section className="project-content section">
         <div className="container">
-          <div className="project-details">
-            <h2>Project Overview</h2>
-            <p>{project.details}</p>
+          <div className="content-grid">
+            {/* Main Content */}
+            <div className="main-content">
+              <h2>Project Overview</h2>
+              <div className="project-details">
+                {project.details.split('\n').map((paragraph, index) => (
+                  paragraph.trim() && <p key={index}>{paragraph}</p>
+                ))}
+              </div>
+            </div>
 
-            <h2>Key Features</h2>
-            <ul className="project-features">
-              <li>Advanced machine learning algorithms</li>
-              <li>Real-time data processing</li>
-              <li>Interactive visualization dashboards</li>
-              <li>Scalable cloud infrastructure</li>
-            </ul>
-
-            <h2>Technologies Used</h2>
-            <div className="project-tech">
-              {project.tags.map((tag, i) => (
-                <div key={i} className="tech-badge-large">
-                  <span>🔧</span> {tag}
+            {/* Sidebar */}
+            <aside className="project-sidebar">
+              {/* Technologies */}
+              <div className="sidebar-card">
+                <h3>🛠️ Technologies</h3>
+                <div className="tech-tags">
+                  {project.tags && project.tags.map((tag, index) => (
+                    <span key={index} className="tech-tag">{tag}</span>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+              </div>
 
-      {/* Related Projects */}
-      {relatedProjects.length > 0 && (
-        <section className="related-projects section section-dark">
-          <div className="container">
-            <h2 className="section-title">Related Projects</h2>
-            <div className="portfolio-grid">
-              {relatedProjects.map((relProject) => (
-                <Link 
-                  key={relProject.id} 
-                  to={`/project/${relProject.id}`}
-                  className="portfolio-card"
-                >
-                  <div className="portfolio-card-header">
-                    <span className="portfolio-category">{relProject.category}</span>
-                  </div>
-                  <div className="portfolio-card-body">
-                    <h3 className="portfolio-title">{relProject.title}</h3>
-                    <p className="portfolio-description">{relProject.description}</p>
-                  </div>
-                  <div className="portfolio-card-footer">
-                    <span className="portfolio-link">View Details →</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+              {/* Category */}
+              <div className="sidebar-card">
+                <h3>📂 Category</h3>
+                <p className="category-name">{project.category}</p>
+              </div>
 
-      {/* CTA */}
-      <section className="project-cta section">
-        <div className="container">
-          <div className="cta-content">
-            <h2>Interested in a Similar Project?</h2>
-            <p>Let's discuss how we can help with your environmental challenges</p>
-            <Link to="/contact" className="btn btn-primary btn-large">Get In Touch</Link>
+              {/* Date */}
+              <div className="sidebar-card">
+                <h3>📅 Created</h3>
+                <p>{new Date(project.$createdAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}</p>
+              </div>
+
+              {/* Share/Actions */}
+              <div className="sidebar-card">
+                <h3>🔗 Share</h3>
+                <div className="share-buttons">
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      alert('Link copied to clipboard!');
+                    }}
+                    className="share-btn"
+                  >
+                    📋 Copy Link
+                  </button>
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
       </section>
