@@ -51,8 +51,6 @@ function About() {
     location: 'Your location',
     github: '',
     linkedin: '',
-    facebook: '',
-    twitter: '',
     profileImage: '',
     skills: ['Python', 'React', 'Machine Learning'],
     education: 'Your education details',
@@ -132,16 +130,6 @@ function About() {
                 {data.linkedin && (
                   <a href={data.linkedin} target="_blank" rel="noopener noreferrer" className="social-link">
                     <span>💼</span> LinkedIn
-                  </a>
-                )}
-                {data.facebook && (
-                  <a href={data.facebook} target="_blank" rel="noopener noreferrer" className="social-link">
-                    <span>📘</span> Facebook
-                  </a>
-                )}
-                {data.twitter && (
-                  <a href={data.twitter} target="_blank" rel="noopener noreferrer" className="social-link">
-                    <span>🐦</span> Twitter
                   </a>
                 )}
               </div>

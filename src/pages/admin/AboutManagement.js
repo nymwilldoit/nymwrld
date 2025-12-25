@@ -21,8 +21,6 @@ function AboutManagement() {
     location: '',
     github: '',
     linkedin: '',
-    facebook: '',
-    twitter: '',
     profileImage: '',
     skills: '',
     education: '',
@@ -66,8 +64,6 @@ function AboutManagement() {
           location: data.location || '',
           github: data.github || '',
           linkedin: data.linkedin || '',
-          facebook: data.facebook || '',
-          twitter: data.twitter || '',
           profileImage: data.profileImage || '',
           skills: Array.isArray(data.skills) ? data.skills.join(', ') : '',
           education: data.education || '',
@@ -132,8 +128,6 @@ function AboutManagement() {
         location: formData.location,
         github: formData.github,
         linkedin: formData.linkedin,
-        facebook: formData.facebook,
-        twitter: formData.twitter,
         profileImage: profileImage,
         skills: formData.skills.split(',').map(s => s.trim()).filter(s => s),
         education: formData.education,
@@ -330,30 +324,6 @@ function AboutManagement() {
                     value={formData.linkedin}
                     onChange={handleInputChange}
                     placeholder="https://linkedin.com/in/yourusername"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="facebook">Facebook URL</label>
-                  <input
-                    type="url"
-                    id="facebook"
-                    name="facebook"
-                    value={formData.facebook}
-                    onChange={handleInputChange}
-                    placeholder="https://facebook.com/yourusername"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="twitter">Twitter/X URL</label>
-                  <input
-                    type="url"
-                    id="twitter"
-                    name="twitter"
-                    value={formData.twitter}
-                    onChange={handleInputChange}
-                    placeholder="https://twitter.com/yourusername"
                   />
                 </div>
               </div>
