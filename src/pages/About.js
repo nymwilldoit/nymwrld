@@ -120,19 +120,21 @@ function About() {
                 )}
               </div>
 
-              {/* Social Links */}
-              <div className="social-links">
-                {data.github && (
-                  <a href={data.github} target="_blank" rel="noopener noreferrer" className="social-link">
-                    <span>💻</span> GitHub
-                  </a>
-                )}
-                {data.linkedin && (
-                  <a href={data.linkedin} target="_blank" rel="noopener noreferrer" className="social-link">
-                    <span>💼</span> LinkedIn
-                  </a>
-                )}
-              </div>
+              {/* Social Links - Only GitHub and LinkedIn */}
+              {(data.github || data.linkedin) && (
+                <div className="social-links">
+                  {data.github && (
+                    <a href={data.github} target="_blank" rel="noopener noreferrer" className="social-link">
+                      <span>💻</span> GitHub
+                    </a>
+                  )}
+                  {data.linkedin && (
+                    <a href={data.linkedin} target="_blank" rel="noopener noreferrer" className="social-link">
+                      <span>💼</span> LinkedIn
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Skills */}

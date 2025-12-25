@@ -6,7 +6,6 @@ import './AboutManagement.css';
 
 function AboutManagement() {
   const navigate = useNavigate();
-  const [aboutData, setAboutData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [aboutId, setAboutId] = useState(null);
@@ -52,7 +51,6 @@ function AboutManagement() {
 
       if (response.documents.length > 0) {
         const data = response.documents[0];
-        setAboutData(data);
         setAboutId(data.$id);
         setFormData({
           name: data.name || '',
@@ -299,7 +297,7 @@ function AboutManagement() {
                 </div>
               </div>
 
-              {/* Social Media */}
+              {/* Social Media - Only GitHub and LinkedIn */}
               <div className="form-section">
                 <h3 className="section-heading">🌐 Social Media Links</h3>
                 
