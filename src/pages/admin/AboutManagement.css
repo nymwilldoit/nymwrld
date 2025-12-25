@@ -1,0 +1,44 @@
+/* About Management Styles */
+.about-management {
+  min-height: 100vh;
+  background: #ffffff;
+  padding-top: 70px;
+}
+
+.about-form {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.form-section {
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 2px solid #f5f5f5;
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+}
+
+.section-heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 24px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .about-form {
+    padding: 24px;
+  }
+}

@@ -1,132 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { account } from '../../appwrite/config';
 import './AdminLogin.css';
 
 function AdminLogin() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
-  // Check if user is already logged in
   useEffect(() => {
-    checkSession();
+    // Check if already logged in
+    checkAuth();
   }, []);
 
-  const checkSession = async () => {
+  const checkAuth = async () => {
     try {
       await account.get();
-      // User is logged in, redirect to dashboard
+      // Already logged in, redirect to dashboard
       navigate('/admin/dashboard');
     } catch (error) {
-      // User not logged in, stay on login page
-      console.log('No active session');
+      // Not logged in, stay on login page
     }
   };
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      // Create email session in Appwrite
-      await account.createEmailPasswordSession(email, password);
-      
-      console.log('Login successful!');
-      
-      // Redirect to dashboard
+      await account.createEmailSession(email, password);
       navigate('/admin/dashboard');
-    } catch (err) {
-      console.error('Login error:', err);
-      
-      // User-friendly error messages
-      if (err.code === 401) {
-        setError('Invalid email or password');
-      } else if (err.message.includes('user')) {
-        setError('No account found with this email');
-      } else {
-        setError('Login failed. Please try again.');
-      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Invalid email or password. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="admin-login-container">
-      <div className="admin-login-box">
+    <div className="admin-login-page">
+      <div className="login-container">
         <div className="login-header">
-          <div className="logo">🌿</div>
-          <h2>Admin Portal</h2>
-          <p>EcoML Studio Dashboard</p>
+          <span className="login-icon">🔐</span>
+          <h1 className="login-title">Admin Login</h1>
+          <p className="login-subtitle">Access your dashboard</p>
         </div>
 
         {error && (
           <div className="error-message">
-            <span className="error-icon">⚠️</span>
             {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="login-form">
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="email">
-              <span className="label-icon">📧</span>
-              Email Address
-            </label>
+            <label htmlFor="email">Email Address</label>
             <input
-              id="email"
               type="email"
+              id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@ecomlstudio.com"
+              placeholder="admin@example.com"
               required
-              autoComplete="email"
               disabled={loading}
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">
-              <span className="label-icon">🔒</span>
-              Password
-            </label>
+            <label htmlFor="password">Password</label>
             <input
-              id="password"
               type="password"
+              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               required
-              autoComplete="current-password"
               disabled={loading}
             />
           </div>
 
           <button 
             type="submit" 
+            className="login-btn"
             disabled={loading}
-            className="login-button"
           >
-            {loading ? (
-              <>
-                <span className="spinner">⏳</span>
-                Logging in...
-              </>
-            ) : (
-              <>
-                <span className="button-icon">🚀</span>
-                Login to Dashboard
-              </>
-            )}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
         <div className="login-footer">
-          <p>🔐 Secure admin access only</p>
+          <Link to="/" className="back-link">
+            ← Back to Website
+          </Link>
         </div>
       </div>
     </div>

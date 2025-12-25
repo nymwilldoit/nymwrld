@@ -1,97 +1,179 @@
-import React, { useEffect } from 'react';
-import data from '../data/data.json';
+import React, { useEffect, useState } from 'react';
+import { databases, DATABASE_ID, ABOUT_COLLECTION_ID } from '../appwrite/config';
+import { Query } from 'appwrite';
+import './About.css';
 
 function About() {
+  const [aboutData, setAboutData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    window.scrollTo(0, 0);
-    animateCounters();
+    fetchAboutData();
   }, []);
 
-  const animateCounters = () => {
-    const counters = document.querySelectorAll('.stat-number-large');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && !entry.target.classList.contains('counted')) {
-          const target = entry.target;
-          const count = parseInt(target.getAttribute('data-count'));
-          let current = 0;
-          const increment = count / 50;
-          const timer = setInterval(() => {
-            current += increment;
-            if (current >= count) {
-              target.textContent = count + (count === 98 ? '%' : '+');
-              clearInterval(timer);
-            } else {
-              target.textContent = Math.floor(current) + (count === 98 ? '%' : '+');
-            }
-          }, 40);
-          target.classList.add('counted');
-        }
-      });
-    }, { threshold: 0.5 });
+  const fetchAboutData = async () => {
+    try {
+      setLoading(true);
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        ABOUT_COLLECTION_ID,
+        [Query.limit(1)]
+      );
 
-    counters.forEach(counter => observer.observe(counter));
+      if (response.documents.length > 0) {
+        setAboutData(response.documents[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching about data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="about-page">
+        <div className="loading-container">
+          <div className="loading-spinner">⏳</div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Default data if nothing in database
+  const data = aboutData || {
+    name: 'Your Name',
+    status: 'Student',
+    bio: 'Add your bio in the admin panel.',
+    currentProject: 'Your current project',
+    email: 'your.email@example.com',
+    location: 'Your location',
+    github: '',
+    linkedin: '',
+    facebook: '',
+    twitter: '',
+    profileImage: '',
+    skills: ['Python', 'React', 'Machine Learning'],
+    education: 'Your education details',
+    experience: 'Your experience details'
   };
 
   return (
     <div className="about-page">
-      {/* Page Header */}
-      <section className="page-header">
+      {/* Hero Section */}
+      <section className="about-hero">
         <div className="container">
-          <h1 className="page-title">About Us</h1>
-          <p className="page-subtitle">{data.about.title}</p>
+          <div className="hero-content">
+            <div className="hero-text">
+              <h1 className="hero-title">About Me</h1>
+              <p className="hero-status">{data.status}</p>
+              <p className="hero-subtitle">
+                {data.bio.substring(0, 150)}...
+              </p>
+            </div>
+            {data.profileImage && (
+              <div className="hero-image">
+                <img src={data.profileImage} alt={data.name} />
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* About Content */}
+      {/* Main Content */}
       <section className="about-content section">
         <div className="container">
           <div className="content-grid">
-            <div className="content-block" data-aos="fade-right">
-              <h2 className="content-title">Our Mission</h2>
-              <p className="content-text">{data.about.description}</p>
+            {/* Bio Section */}
+            <div className="content-card">
+              <h2 className="card-title">👋 Hello, I'm {data.name}</h2>
+              <p className="card-text">{data.bio}</p>
+
+              {data.currentProject && (
+                <div className="current-project">
+                  <h3>🚀 Currently Working On</h3>
+                  <p>{data.currentProject}</p>
+                </div>
+              )}
             </div>
 
-            <div className="content-block" data-aos="fade-left">
-              <h2 className="content-title">What We Do</h2>
-              <p className="content-text">{data.about.mission}</p>
-            </div>
-
-            <div className="content-block" data-aos="fade-right">
-              <h2 className="content-title">Our Approach</h2>
-              <p className="content-text">{data.about.values}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="stats-large section section-dark">
-        <div className="container">
-          <h2 className="section-title">Our Impact</h2>
-          <div className="stats-grid-large">
-            {data.stats.map((stat, index) => (
-              <div key={index} className="stat-item-large" data-aos="zoom-in" data-aos-delay={index * 100}>
-                <div className="stat-number-large" data-count={stat.value}>0</div>
-                <div className="stat-label-large">{stat.label}</div>
+            {/* Contact Info */}
+            <div className="content-card">
+              <h2 className="card-title">📫 Contact Information</h2>
+              <div className="contact-list">
+                {data.email && (
+                  <div className="contact-item">
+                    <span className="contact-icon">📧</span>
+                    <a href={`mailto:${data.email}`}>{data.email}</a>
+                  </div>
+                )}
+                {data.phone && (
+                  <div className="contact-item">
+                    <span className="contact-icon">📱</span>
+                    <a href={`tel:${data.phone}`}>{data.phone}</a>
+                  </div>
+                )}
+                {data.location && (
+                  <div className="contact-item">
+                    <span className="contact-icon">📍</span>
+                    <span>{data.location}</span>
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Technologies */}
-      <section className="about-technologies section">
-        <div className="container">
-          <h2 className="section-title">Technologies & Tools</h2>
-          <p className="section-subtitle">We leverage cutting-edge technologies</p>
-          <div className="tech-grid">
-            {data.technologies.map((tech, index) => (
-              <div key={index} className="tech-item" data-aos="fade-up" data-aos-delay={index * 50}>
-                <span className="tech-icon">{tech.icon}</span>
-                <span className="tech-name">{tech.name}</span>
+              {/* Social Links */}
+              <div className="social-links">
+                {data.github && (
+                  <a href={data.github} target="_blank" rel="noopener noreferrer" className="social-link">
+                    <span>💻</span> GitHub
+                  </a>
+                )}
+                {data.linkedin && (
+                  <a href={data.linkedin} target="_blank" rel="noopener noreferrer" className="social-link">
+                    <span>💼</span> LinkedIn
+                  </a>
+                )}
+                {data.facebook && (
+                  <a href={data.facebook} target="_blank" rel="noopener noreferrer" className="social-link">
+                    <span>📘</span> Facebook
+                  </a>
+                )}
+                {data.twitter && (
+                  <a href={data.twitter} target="_blank" rel="noopener noreferrer" className="social-link">
+                    <span>🐦</span> Twitter
+                  </a>
+                )}
               </div>
-            ))}
+            </div>
+
+            {/* Skills */}
+            {data.skills && data.skills.length > 0 && (
+              <div className="content-card">
+                <h2 className="card-title">💡 Skills</h2>
+                <div className="skills-grid">
+                  {data.skills.map((skill, index) => (
+                    <span key={index} className="skill-tag">{skill}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Education */}
+            {data.education && (
+              <div className="content-card">
+                <h2 className="card-title">🎓 Education</h2>
+                <p className="card-text">{data.education}</p>
+              </div>
+            )}
+
+            {/* Experience */}
+            {data.experience && (
+              <div className="content-card">
+                <h2 className="card-title">💼 Experience</h2>
+                <p className="card-text">{data.experience}</p>
+              </div>
+            )}
           </div>
         </div>
       </section>

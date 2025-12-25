@@ -1,58 +1,76 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import data from '../data/data.json';
+import './Navbar.css';
 
 function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-
-      // Progress bar
-      const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrolledPercent = (window.scrollY / windowHeight) * 100;
-      const progressBar = document.querySelector('.nav-progress');
-      if (progressBar) {
-        progressBar.style.width = scrolledPercent + '%';
-      }
+      setIsScrolled(window.scrollY > 50);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [location]);
+  const isActive = (path) => location.pathname === path;
 
   return (
-    <nav id="navbar" className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <div className="nav-progress"></div>
-      <div className="container nav-container">
-        <Link to="/" className="logo">
-          <span className="logo-icon">🌿</span>
-          <span className="logo-text">{data.site.name}</span>
+    <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
+      <div className="nav-container">
+        <Link to="/" className="nav-logo">
+          <span className="logo-icon">🌍</span>
+          <span className="logo-text">EcoML</span>
         </Link>
 
+        <div className={`nav-menu ${isMobileMenuOpen ? 'active' : ''}`}>
+          <Link 
+            to="/" 
+            className={`nav-link ${isActive('/') ? 'active' : ''}`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Home
+          </Link>
+          <Link 
+            to="/about" 
+            className={`nav-link ${isActive('/about') ? 'active' : ''}`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            About
+          </Link>
+          <Link 
+            to="/portfolio" 
+            className={`nav-link ${isActive('/portfolio') ? 'active' : ''}`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Portfolio
+          </Link>
+          <Link 
+            to="/contact" 
+            className={`nav-link ${isActive('/contact') ? 'active' : ''}`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Contact
+          </Link>
+          <Link 
+            to="/admin/login" 
+            className="nav-link admin-link"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <span className="admin-icon">🔐</span>
+            Admin
+          </Link>
+        </div>
+
         <button 
-          className={`hamburger ${menuOpen ? 'active' : ''}`}
-          onClick={() => setMenuOpen(!menuOpen)}
+          className="mobile-menu-toggle"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle menu"
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          <span className={`hamburger ${isMobileMenuOpen ? 'active' : ''}`}></span>
         </button>
-
-        <ul className={`nav-menu ${menuOpen ? 'active' : ''}`}>
-          <li><Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link></li>
-          <li><Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>About</Link></li>
-          <li><Link to="/portfolio" className={location.pathname === '/portfolio' ? 'active' : ''}>Portfolio</Link></li>
-          <li><Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''}>Contact</Link></li>
-        </ul>
       </div>
     </nav>
   );
