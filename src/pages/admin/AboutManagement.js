@@ -61,7 +61,6 @@ const AboutManagement = () => {
       const ownerStatus = await isOwner();
       setIsUserOwner(ownerStatus);
 
-      // Set default userId
       setFormData(prev => ({ ...prev, userId: currentUser.$id }));
 
       await fetchTeamMembers(currentUser.$id, ownerStatus);
@@ -362,32 +361,31 @@ const AboutManagement = () => {
           </h2>
 
           <form onSubmit={handleSubmit} className="about-form">
-            {/* User Assignment - NEW SECTION */}
-            {isUserOwner && (
-              <div className="form-section">
-                <h3 className="section-title">User Assignment</h3>
-                
-                <div className="form-group">
-                  <label className="form-label">User ID *</label>
-                  <input
-                    type="text"
-                    name="userId"
-                    value={formData.userId}
-                    onChange={handleInputChange}
-                    required
-                    disabled={!!selectedMember}
-                    className="form-input"
-                    placeholder="Appwrite User ID"
-                  />
-                  <small className="form-hint">
-                    {selectedMember 
-                      ? 'User ID cannot be changed after creation' 
-                      : `Current user: ${user.$id} (you can change this to assign to another user)`
-                    }
-                  </small>
-                </div>
+            
+            {/* User ID Section - IMPORTANT! */}
+            <div className="form-section user-id-section">
+              <h3 className="section-title">User Assignment</h3>
+              
+              <div className="form-group">
+                <label className="form-label">User ID * (Required)</label>
+                <input
+                  type="text"
+                  name="userId"
+                  value={formData.userId}
+                  onChange={handleInputChange}
+                  required
+                  disabled={!!selectedMember || !isUserOwner}
+                  className="form-input"
+                  placeholder="Enter Appwrite User ID"
+                />
+                <small className="form-hint">
+                  {selectedMember 
+                    ? '⚠️ User ID cannot be changed after creation' 
+                    : `✅ Your User ID: ${user?.$id || 'Loading...'}`
+                  }
+                </small>
               </div>
-            )}
+            </div>
 
             {/* Basic Info */}
             <div className="form-section">
@@ -518,7 +516,7 @@ const AboutManagement = () => {
 
             {/* Social Media - ONLY GitHub and LinkedIn */}
             <div className="form-section">
-              <h3 className="section-title">Social Media</h3>
+              <h3 className="section-title">Social Media (GitHub & LinkedIn Only)</h3>
 
               <div className="form-group">
                 <label className="form-label">GitHub URL</label>

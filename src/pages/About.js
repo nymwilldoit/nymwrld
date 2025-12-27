@@ -19,7 +19,6 @@ const About = () => {
         [Query.equal('isActive', true), Query.orderDesc('$createdAt')]
       );
       
-      // Sort: owner first, then others
       const sorted = response.documents.sort((a, b) => {
         if (a.role === 'owner') return -1;
         if (b.role === 'owner') return 1;
@@ -61,18 +60,13 @@ const About = () => {
 
   return (
     <div className="about-page">
-      {/* Hero Section - Main Owner */}
       {owner && (
         <div className="about-hero">
           <div className="hero-content">
             <div className="hero-text">
               <h1 className="hero-title">{owner.name}</h1>
-              {owner.status && (
-                <p className="hero-status">{owner.status}</p>
-              )}
-              {owner.bio && (
-                <p className="hero-subtitle">{owner.bio}</p>
-              )}
+              {owner.status && <p className="hero-status">{owner.status}</p>}
+              {owner.bio && <p className="hero-subtitle">{owner.bio}</p>}
             </div>
             {owner.profileImage && (
               <div className="hero-image">
@@ -83,10 +77,8 @@ const About = () => {
         </div>
       )}
 
-      {/* Main Content */}
       <div className="about-content">
         <div className="content-wrapper">
-          {/* Owner/Founder Detailed Section */}
           {owner && (
             <>
               <h2 className="section-title">About the Founder</h2>
@@ -94,7 +86,6 @@ const About = () => {
             </>
           )}
 
-          {/* Team Members Section */}
           {members.length > 0 && (
             <>
               <h2 className="section-title">Our Team</h2>
@@ -126,13 +117,8 @@ const MemberCard = ({ member, isOwner }) => {
           {member.role === 'owner' && <span className="owner-badge">Founder</span>}
         </h3>
         
-        {member.status && (
-          <p className="member-status">{member.status}</p>
-        )}
-
-        {!isOwner && member.bio && (
-          <p className="member-bio">{member.bio}</p>
-        )}
+        {member.status && <p className="member-status">{member.status}</p>}
+        {!isOwner && member.bio && <p className="member-bio">{member.bio}</p>}
 
         {member.currentProject && (
           <div className="current-project">
@@ -152,7 +138,6 @@ const MemberCard = ({ member, isOwner }) => {
           </div>
         )}
 
-        {/* Contact Info */}
         <div className="member-contact">
           {member.email && (
             <div className="contact-item">
@@ -174,7 +159,6 @@ const MemberCard = ({ member, isOwner }) => {
           )}
         </div>
 
-        {/* Social Links - ONLY GitHub and LinkedIn */}
         {(member.github || member.linkedin) && (
           <div className="social-links">
             {member.github && (
