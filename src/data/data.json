@@ -7,7 +7,7 @@
     "location": "Dhaka, Bangladesh"
   },
   "hero": {
-    "title": "Combining Environmental Science with AI-Powered Solutions",
+    "title": "Environmental ML",
     "subtitle": "Pioneering data-driven solutions for environmental challenges",
     "cta": "View Our Work"
   },
@@ -16,19 +16,25 @@
       "id": 1,
       "title": "Environmental Data Analysis",
       "description": "Advanced geographic and environmental data analysis for sustainable solutions with real-time monitoring systems",
-      "icon": "\ud83c\udf0d"
+      "icon": "🌍"
     },
     {
       "id": 2,
       "title": "Machine Learning Models",
       "description": "Cutting-edge AI models for prediction and decision-making systems powered by deep learning algorithms",
-      "icon": "\ud83e\udd16"
+      "icon": "🤖"
     },
     {
       "id": 3,
       "title": "Data Visualization",
       "description": "Interactive dashboards and comprehensive visual analytics with beautiful, intuitive interfaces",
-      "icon": "\ud83d\udcca"
+      "icon": "📊"
+    },
+    {
+      "id": 4,
+      "title": "Flood Prediction",
+      "description": "Advanced ML models to predict river water levels and flooding events with high accuracy",
+      "icon": "🌊"
     }
   ],
   "stats": [
@@ -49,6 +55,21 @@
       "value": 1000
     }
   ],
+  "techStack": [
+    "Python",
+    "TensorFlow",
+    "Scikit-learn",
+    "LightGBM",
+    "React",
+    "Node.js",
+    "Streamlit",
+    "Pandas",
+    "GeoPandas",
+    "PostgreSQL",
+    "Docker",
+    "AWS",
+    "ArcGIS"
+  ],
   "about": {
     "title": "Pioneering the intersection of environmental science and artificial intelligence",
     "description": "EcoML Studio is dedicated to leveraging the power of machine learning and data science to address critical environmental challenges. We combine geographical expertise with advanced AI technologies to create predictive models and analytical tools that support sustainable development.",
@@ -61,11 +82,7 @@
       "title": "River Flood Prediction System",
       "description": "AI-powered flood forecasting for Bangladesh rivers using advanced LSTM models",
       "category": "Machine Learning",
-      "tags": [
-        "LSTM",
-        "Time Series",
-        "Prediction"
-      ],
+      "tags": ["LSTM", "Time Series", "Prediction"],
       "details": "Comprehensive flood prediction system using historical data and machine learning to forecast river water levels in Bangladesh. Helps in early warning and disaster management."
     },
     {
@@ -73,11 +90,7 @@
       "title": "Weather Analytics Dashboard",
       "description": "Real-time weather prediction and visualization with interactive charts",
       "category": "Data Visualization",
-      "tags": [
-        "React",
-        "D3.js",
-        "API Integration"
-      ],
+      "tags": ["React", "D3.js", "API Integration"],
       "details": "Interactive weather dashboard providing real-time forecasts, historical trends, and climate pattern analysis with beautiful visualizations."
     },
     {
@@ -85,11 +98,7 @@
       "title": "Geospatial Analysis Platform",
       "description": "Spatial analysis for environmental planning and urban development",
       "category": "GIS",
-      "tags": [
-        "ArcGIS",
-        "Python",
-        "Spatial Analysis"
-      ],
+      "tags": ["ArcGIS", "Python", "Spatial Analysis"],
       "details": "Advanced geospatial platform for environmental impact assessment and urban planning with powerful analytical capabilities."
     },
     {
@@ -97,11 +106,7 @@
       "title": "Crop Yield Predictor",
       "description": "ML models for rice production prediction and crop yield optimization",
       "category": "Agriculture",
-      "tags": [
-        "Random Forest",
-        "Feature Engineering",
-        "Agriculture"
-      ],
+      "tags": ["Random Forest", "Feature Engineering", "Agriculture"],
       "details": "Machine learning system predicting crop yields based on weather, soil, and historical data to optimize agricultural production."
     },
     {
@@ -109,11 +114,7 @@
       "title": "Air Quality Monitor",
       "description": "IoT-based air quality tracking system with real-time alerts",
       "category": "IoT",
-      "tags": [
-        "IoT",
-        "Sensors",
-        "Real-time Data"
-      ],
+      "tags": ["IoT", "Sensors", "Real-time Data"],
       "details": "IoT-enabled air quality monitoring network with real-time data collection, analysis, and alert system for pollution management."
     },
     {
@@ -121,46 +122,42 @@
       "title": "Urban Planning Tools",
       "description": "Interactive mapping for urban planning with advanced geospatial tools",
       "category": "GIS",
-      "tags": [
-        "Leaflet",
-        "WebGIS",
-        "Urban Planning"
-      ],
+      "tags": ["Leaflet", "WebGIS", "Urban Planning"],
       "details": "Comprehensive web-based GIS platform for urban planners with interactive mapping, spatial analysis, and decision support tools."
     }
   ],
   "technologies": [
     {
       "name": "Python",
-      "icon": "\ud83d\udc0d"
+      "icon": "🐍"
     },
     {
       "name": "TensorFlow",
-      "icon": "\ud83e\udde0"
+      "icon": "🧠"
     },
     {
       "name": "React",
-      "icon": "\u269b\ufe0f"
+      "icon": "⚛️"
     },
     {
       "name": "Node.js",
-      "icon": "\ud83d\udfe2"
+      "icon": "🟢"
     },
     {
       "name": "PostgreSQL",
-      "icon": "\ud83d\udc18"
+      "icon": "🐘"
     },
     {
       "name": "Docker",
-      "icon": "\ud83d\udc33"
+      "icon": "🐳"
     },
     {
       "name": "AWS",
-      "icon": "\u2601\ufe0f"
+      "icon": "☁️"
     },
     {
       "name": "ArcGIS",
-      "icon": "\ud83d\uddfa\ufe0f"
+      "icon": "🗺️"
     }
   ]
 }
