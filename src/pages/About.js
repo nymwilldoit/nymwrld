@@ -1,30 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { databases, DATABASE_ID, ABOUT_COLLECTION_ID } from '../appwrite/config';
-import { Query } from 'appwrite';
+import React, { useState, useEffect } from 'react';
+import { databases, DATABASE_ID, ABOUT_COLLECTION_ID, Query } from '../appwrite/config';
 import './About.css';
 
-function About() {
-  const [aboutData, setAboutData] = useState(null);
+const About = () => {
+  const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAboutData();
+    fetchTeamMembers();
   }, []);
 
-  const fetchAboutData = async () => {
+  const fetchTeamMembers = async () => {
     try {
       setLoading(true);
       const response = await databases.listDocuments(
         DATABASE_ID,
         ABOUT_COLLECTION_ID,
-        [Query.limit(1)]
+        [Query.equal('isActive', true), Query.orderDesc('$createdAt')]
       );
-
-      if (response.documents.length > 0) {
-        setAboutData(response.documents[0]);
-      }
+      
+      // Sort: owner first, then others
+      const sorted = response.documents.sort((a, b) => {
+        if (a.role === 'owner') return -1;
+        if (b.role === 'owner') return 1;
+        return 0;
+      });
+      
+      setTeamMembers(sorted);
     } catch (error) {
-      console.error('Error fetching about data:', error);
+      console.error('Error fetching team members:', error);
     } finally {
       setLoading(false);
     }
@@ -35,140 +39,181 @@ function About() {
       <div className="about-page">
         <div className="loading-container">
           <div className="loading-spinner">⏳</div>
-          <p>Loading...</p>
+          <p>Loading team information...</p>
         </div>
       </div>
     );
   }
 
-  // Default data if nothing in database
-  const data = aboutData || {
-    name: 'Your Name',
-    status: 'Student',
-    bio: 'Add your bio in the admin panel.',
-    currentProject: 'Your current project',
-    email: 'your.email@example.com',
-    location: 'Your location',
-    github: '',
-    linkedin: '',
-    profileImage: '',
-    skills: ['Python', 'React', 'Machine Learning'],
-    education: 'Your education details',
-    experience: 'Your experience details'
-  };
+  if (teamMembers.length === 0) {
+    return (
+      <div className="about-page">
+        <div className="about-hero">
+          <h1>About Us</h1>
+          <p>Team information coming soon...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const owner = teamMembers.find(m => m.role === 'owner');
+  const members = teamMembers.filter(m => m.role !== 'owner');
 
   return (
     <div className="about-page">
-      {/* Hero Section */}
-      <section className="about-hero">
-        <div className="container">
+      {/* Hero Section - Main Owner */}
+      {owner && (
+        <div className="about-hero">
           <div className="hero-content">
             <div className="hero-text">
-              <h1 className="hero-title">About Me</h1>
-              <p className="hero-status">{data.status}</p>
-              <p className="hero-subtitle">
-                {data.bio.substring(0, 150)}...
-              </p>
+              <h1 className="hero-title">{owner.name}</h1>
+              {owner.status && (
+                <p className="hero-status">{owner.status}</p>
+              )}
+              {owner.bio && (
+                <p className="hero-subtitle">{owner.bio}</p>
+              )}
             </div>
-            {data.profileImage && (
+            {owner.profileImage && (
               <div className="hero-image">
-                <img src={data.profileImage} alt={data.name} />
+                <img src={owner.profileImage} alt={owner.name} />
               </div>
             )}
           </div>
         </div>
-      </section>
+      )}
 
       {/* Main Content */}
-      <section className="about-content section">
-        <div className="container">
-          <div className="content-grid">
-            {/* Bio Section */}
-            <div className="content-card">
-              <h2 className="card-title">👋 Hello, I'm {data.name}</h2>
-              <p className="card-text">{data.bio}</p>
+      <div className="about-content">
+        <div className="content-wrapper">
+          {/* Owner/Founder Detailed Section */}
+          {owner && (
+            <>
+              <h2 className="section-title">About the Founder</h2>
+              <MemberCard member={owner} isOwner={true} />
+            </>
+          )}
 
-              {data.currentProject && (
-                <div className="current-project">
-                  <h3>🚀 Currently Working On</h3>
-                  <p>{data.currentProject}</p>
-                </div>
-              )}
-            </div>
-
-            {/* Contact Info */}
-            <div className="content-card">
-              <h2 className="card-title">📫 Contact Information</h2>
-              <div className="contact-list">
-                {data.email && (
-                  <div className="contact-item">
-                    <span className="contact-icon">📧</span>
-                    <a href={`mailto:${data.email}`}>{data.email}</a>
-                  </div>
-                )}
-                {data.phone && (
-                  <div className="contact-item">
-                    <span className="contact-icon">📱</span>
-                    <a href={`tel:${data.phone}`}>{data.phone}</a>
-                  </div>
-                )}
-                {data.location && (
-                  <div className="contact-item">
-                    <span className="contact-icon">📍</span>
-                    <span>{data.location}</span>
-                  </div>
-                )}
+          {/* Team Members Section */}
+          {members.length > 0 && (
+            <>
+              <h2 className="section-title">Our Team</h2>
+              <div className="team-grid">
+                {members.map((member) => (
+                  <MemberCard key={member.$id} member={member} isOwner={false} />
+                ))}
               </div>
-
-              {/* Social Links - Only GitHub and LinkedIn */}
-              {(data.github || data.linkedin) && (
-                <div className="social-links">
-                  {data.github && (
-                    <a href={data.github} target="_blank" rel="noopener noreferrer" className="social-link">
-                      <span>💻</span> GitHub
-                    </a>
-                  )}
-                  {data.linkedin && (
-                    <a href={data.linkedin} target="_blank" rel="noopener noreferrer" className="social-link">
-                      <span>💼</span> LinkedIn
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Skills */}
-            {data.skills && data.skills.length > 0 && (
-              <div className="content-card">
-                <h2 className="card-title">💡 Skills</h2>
-                <div className="skills-grid">
-                  {data.skills.map((skill, index) => (
-                    <span key={index} className="skill-tag">{skill}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Education */}
-            {data.education && (
-              <div className="content-card">
-                <h2 className="card-title">🎓 Education</h2>
-                <p className="card-text">{data.education}</p>
-              </div>
-            )}
-
-            {/* Experience */}
-            {data.experience && (
-              <div className="content-card">
-                <h2 className="card-title">💼 Experience</h2>
-                <p className="card-text">{data.experience}</p>
-              </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
-      </section>
+      </div>
     </div>
   );
-}
+};
+
+const MemberCard = ({ member, isOwner }) => {
+  return (
+    <div className={`member-card ${isOwner ? 'owner-card' : ''}`}>
+      {member.profileImage && (
+        <div className="member-image">
+          <img src={member.profileImage} alt={member.name} />
+        </div>
+      )}
+      
+      <div className="member-info">
+        <h3 className="member-name">
+          {member.name}
+          {member.role === 'owner' && <span className="owner-badge">Founder</span>}
+        </h3>
+        
+        {member.status && (
+          <p className="member-status">{member.status}</p>
+        )}
+
+        {!isOwner && member.bio && (
+          <p className="member-bio">{member.bio}</p>
+        )}
+
+        {member.currentProject && (
+          <div className="current-project">
+            <h4>Current Project</h4>
+            <p>{member.currentProject}</p>
+          </div>
+        )}
+
+        {member.skills && member.skills.length > 0 && (
+          <div className="member-skills">
+            <h4>Skills</h4>
+            <div className="skills-grid">
+              {member.skills.map((skill, index) => (
+                <span key={index} className="skill-tag">{skill}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Contact Info */}
+        <div className="member-contact">
+          {member.email && (
+            <div className="contact-item">
+              <span className="contact-icon">📧</span>
+              <a href={`mailto:${member.email}`}>{member.email}</a>
+            </div>
+          )}
+          {member.phone && (
+            <div className="contact-item">
+              <span className="contact-icon">📱</span>
+              <span>{member.phone}</span>
+            </div>
+          )}
+          {member.location && (
+            <div className="contact-item">
+              <span className="contact-icon">📍</span>
+              <span>{member.location}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Social Links */}
+        <div className="social-links">
+          {member.github && (
+            <a href={member.github} target="_blank" rel="noopener noreferrer" className="social-link">
+              <span>GitHub</span>
+            </a>
+          )}
+          {member.linkedin && (
+            <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="social-link">
+              <span>LinkedIn</span>
+            </a>
+          )}
+          {member.facebook && (
+            <a href={member.facebook} target="_blank" rel="noopener noreferrer" className="social-link">
+              <span>Facebook</span>
+            </a>
+          )}
+          {member.twitter && (
+            <a href={member.twitter} target="_blank" rel="noopener noreferrer" className="social-link">
+              <span>Twitter</span>
+            </a>
+          )}
+        </div>
+
+        {member.education && (
+          <div className="member-section">
+            <h4>Education</h4>
+            <p className="section-text">{member.education}</p>
+          </div>
+        )}
+
+        {member.experience && (
+          <div className="member-section">
+            <h4>Experience</h4>
+            <p className="section-text">{member.experience}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default About;
