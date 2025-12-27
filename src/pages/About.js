@@ -174,29 +174,21 @@ const MemberCard = ({ member, isOwner }) => {
           )}
         </div>
 
-        {/* Social Links */}
-        <div className="social-links">
-          {member.github && (
-            <a href={member.github} target="_blank" rel="noopener noreferrer" className="social-link">
-              <span>GitHub</span>
-            </a>
-          )}
-          {member.linkedin && (
-            <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="social-link">
-              <span>LinkedIn</span>
-            </a>
-          )}
-          {member.facebook && (
-            <a href={member.facebook} target="_blank" rel="noopener noreferrer" className="social-link">
-              <span>Facebook</span>
-            </a>
-          )}
-          {member.twitter && (
-            <a href={member.twitter} target="_blank" rel="noopener noreferrer" className="social-link">
-              <span>Twitter</span>
-            </a>
-          )}
-        </div>
+        {/* Social Links - ONLY GitHub and LinkedIn */}
+        {(member.github || member.linkedin) && (
+          <div className="social-links">
+            {member.github && (
+              <a href={member.github} target="_blank" rel="noopener noreferrer" className="social-link">
+                <span>🔗 GitHub</span>
+              </a>
+            )}
+            {member.linkedin && (
+              <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="social-link">
+                <span>💼 LinkedIn</span>
+              </a>
+            )}
+          </div>
+        )}
 
         {member.education && (
           <div className="member-section">

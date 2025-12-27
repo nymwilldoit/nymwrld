@@ -26,7 +26,7 @@ const AboutManagement = () => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [imageFile, setImageFile] = useState(null);
 
-  // Form data
+  // Form data - NO facebook/twitter
   const [formData, setFormData] = useState({
     name: '',
     status: '',
@@ -37,8 +37,6 @@ const AboutManagement = () => {
     location: '',
     github: '',
     linkedin: '',
-    facebook: '',
-    twitter: '',
     profileImage: '',
     skills: '',
     education: '',
@@ -76,7 +74,6 @@ const AboutManagement = () => {
     try {
       let queries = [Query.orderDesc('$createdAt')];
       
-      // If not owner, only show own profile
       if (!ownerStatus) {
         queries.push(Query.equal('userId', userId));
       }
@@ -89,7 +86,6 @@ const AboutManagement = () => {
 
       setTeamMembers(response.documents);
 
-      // Auto-select user's own profile or first if owner
       if (response.documents.length > 0) {
         const ownProfile = response.documents.find(doc => doc.userId === userId);
         selectMember(ownProfile || response.documents[0]);
@@ -114,8 +110,6 @@ const AboutManagement = () => {
       location: member.location || '',
       github: member.github || '',
       linkedin: member.linkedin || '',
-      facebook: member.facebook || '',
-      twitter: member.twitter || '',
       profileImage: member.profileImage || '',
       skills: Array.isArray(member.skills) ? member.skills.join(', ') : '',
       education: member.education || '',
@@ -161,7 +155,6 @@ const AboutManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Check permissions
     if (selectedMember && selectedMember.userId !== user.$id && !isUserOwner) {
       setMessage('❌ You can only edit your own profile');
       return;
@@ -181,6 +174,7 @@ const AboutManagement = () => {
         ? formData.skills.split(',').map(skill => skill.trim()).filter(Boolean)
         : [];
 
+      // NO facebook/twitter
       const aboutData = {
         name: formData.name,
         status: formData.status,
@@ -191,8 +185,6 @@ const AboutManagement = () => {
         location: formData.location,
         github: formData.github,
         linkedin: formData.linkedin,
-        facebook: formData.facebook,
-        twitter: formData.twitter,
         profileImage: imageUrl,
         skills: skillsArray,
         education: formData.education,
@@ -203,7 +195,6 @@ const AboutManagement = () => {
       };
 
       if (selectedMember) {
-        // Update existing
         await databases.updateDocument(
           DATABASE_ID,
           ABOUT_COLLECTION_ID,
@@ -212,7 +203,6 @@ const AboutManagement = () => {
         );
         setMessage('✅ Profile updated successfully!');
       } else {
-        // Create new
         await databases.createDocument(
           DATABASE_ID,
           ABOUT_COLLECTION_ID,
@@ -244,8 +234,6 @@ const AboutManagement = () => {
       location: '',
       github: '',
       linkedin: '',
-      facebook: '',
-      twitter: '',
       profileImage: '',
       skills: '',
       education: '',
@@ -261,7 +249,6 @@ const AboutManagement = () => {
 
     const memberToDelete = teamMembers.find(m => m.$id === memberId);
     
-    // Check permissions
     if (memberToDelete.userId !== user.$id && !isUserOwner) {
       setMessage('❌ You can only delete your own profile');
       return;
@@ -308,7 +295,7 @@ const AboutManagement = () => {
       )}
 
       <div className="admin-content">
-        {/* Sidebar - Team Members List */}
+        {/* Sidebar */}
         <div className="sidebar">
           <div className="sidebar-header">
             <h3>Team Members</h3>
@@ -368,7 +355,7 @@ const AboutManagement = () => {
           </h2>
 
           <form onSubmit={handleSubmit} className="about-form">
-            {/* Basic Info Section */}
+            {/* Basic Info */}
             <div className="form-section">
               <h3 className="section-title">Basic Information</h3>
 
@@ -454,7 +441,7 @@ const AboutManagement = () => {
               )}
             </div>
 
-            {/* Contact Info Section */}
+            {/* Contact Info */}
             <div className="form-section">
               <h3 className="section-title">Contact Information</h3>
 
@@ -495,7 +482,7 @@ const AboutManagement = () => {
               </div>
             </div>
 
-            {/* Social Media Section */}
+            {/* Social Media - ONLY GitHub and LinkedIn */}
             <div className="form-section">
               <h3 className="section-title">Social Media</h3>
 
@@ -522,33 +509,9 @@ const AboutManagement = () => {
                   placeholder="https://linkedin.com/in/username"
                 />
               </div>
-
-              <div className="form-group">
-                <label className="form-label">Facebook URL</label>
-                <input
-                  type="url"
-                  name="facebook"
-                  value={formData.facebook}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="https://facebook.com/username"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Twitter URL</label>
-                <input
-                  type="url"
-                  name="twitter"
-                  value={formData.twitter}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="https://twitter.com/username"
-                />
-              </div>
             </div>
 
-            {/* Profile Image Section */}
+            {/* Profile Image */}
             <div className="form-section">
               <h3 className="section-title">Profile Image</h3>
 
@@ -574,7 +537,7 @@ const AboutManagement = () => {
               </div>
             </div>
 
-            {/* Skills Section */}
+            {/* Skills */}
             <div className="form-section">
               <h3 className="section-title">Skills & Expertise</h3>
 
@@ -592,7 +555,7 @@ const AboutManagement = () => {
               </div>
             </div>
 
-            {/* Education & Experience Section */}
+            {/* Education & Experience */}
             <div className="form-section">
               <h3 className="section-title">Background</h3>
 
