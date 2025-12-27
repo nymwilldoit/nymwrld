@@ -26,7 +26,6 @@ const AboutManagement = () => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [imageFile, setImageFile] = useState(null);
 
-  // Form data - NO facebook/twitter
   const [formData, setFormData] = useState({
     name: '',
     status: '',
@@ -42,7 +41,8 @@ const AboutManagement = () => {
     education: '',
     experience: '',
     role: 'member',
-    isActive: true
+    isActive: true,
+    userId: ''
   });
 
   useEffect(() => {
@@ -60,6 +60,9 @@ const AboutManagement = () => {
       setUser(currentUser);
       const ownerStatus = await isOwner();
       setIsUserOwner(ownerStatus);
+
+      // Set default userId
+      setFormData(prev => ({ ...prev, userId: currentUser.$id }));
 
       await fetchTeamMembers(currentUser.$id, ownerStatus);
     } catch (error) {
@@ -115,7 +118,8 @@ const AboutManagement = () => {
       education: member.education || '',
       experience: member.experience || '',
       role: member.role || 'member',
-      isActive: member.isActive !== undefined ? member.isActive : true
+      isActive: member.isActive !== undefined ? member.isActive : true,
+      userId: member.userId || ''
     });
   };
 
@@ -160,6 +164,11 @@ const AboutManagement = () => {
       return;
     }
 
+    if (!formData.userId) {
+      setMessage('❌ User ID is required');
+      return;
+    }
+
     setSaving(true);
     setMessage('');
 
@@ -174,7 +183,6 @@ const AboutManagement = () => {
         ? formData.skills.split(',').map(skill => skill.trim()).filter(Boolean)
         : [];
 
-      // NO facebook/twitter
       const aboutData = {
         name: formData.name,
         status: formData.status,
@@ -189,7 +197,7 @@ const AboutManagement = () => {
         skills: skillsArray,
         education: formData.education,
         experience: formData.experience,
-        userId: selectedMember ? selectedMember.userId : user.$id,
+        userId: formData.userId,
         role: isUserOwner ? formData.role : 'member',
         isActive: formData.isActive
       };
@@ -239,7 +247,8 @@ const AboutManagement = () => {
       education: '',
       experience: '',
       role: 'member',
-      isActive: true
+      isActive: true,
+      userId: user.$id
     });
     setImageFile(null);
   };
@@ -295,7 +304,6 @@ const AboutManagement = () => {
       )}
 
       <div className="admin-content">
-        {/* Sidebar */}
         <div className="sidebar">
           <div className="sidebar-header">
             <h3>Team Members</h3>
@@ -348,13 +356,39 @@ const AboutManagement = () => {
           </div>
         </div>
 
-        {/* Main Form */}
         <div className="form-container">
           <h2 className="form-title">
             {selectedMember ? 'Edit Profile' : 'Create New Profile'}
           </h2>
 
           <form onSubmit={handleSubmit} className="about-form">
+            {/* User Assignment - NEW SECTION */}
+            {isUserOwner && (
+              <div className="form-section">
+                <h3 className="section-title">User Assignment</h3>
+                
+                <div className="form-group">
+                  <label className="form-label">User ID *</label>
+                  <input
+                    type="text"
+                    name="userId"
+                    value={formData.userId}
+                    onChange={handleInputChange}
+                    required
+                    disabled={!!selectedMember}
+                    className="form-input"
+                    placeholder="Appwrite User ID"
+                  />
+                  <small className="form-hint">
+                    {selectedMember 
+                      ? 'User ID cannot be changed after creation' 
+                      : `Current user: ${user.$id} (you can change this to assign to another user)`
+                    }
+                  </small>
+                </div>
+              </div>
+            )}
+
             {/* Basic Info */}
             <div className="form-section">
               <h3 className="section-title">Basic Information</h3>
